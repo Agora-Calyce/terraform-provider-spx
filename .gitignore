@@ -1,0 +1,22 @@
+.idea/
+bin/
+.junie/
+.env
+
+# Terraform files
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+terraform.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Builded binary
+/terraform-provider-spx
+
+# GoReleaser output
+/dist/
