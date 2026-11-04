@@ -57,7 +57,7 @@ func TestMapLoadBalancerToClient(t *testing.T) {
 		t.Errorf("Mapping to client failed. Expected %+v, got %+v", expected, lbReq)
 	}
 
-	// Le corps JSON doit correspondre au format attendu par spx-tf-api (ports entiers, sélecteurs objets)
+	// The JSON body must match the format expected by spx-tf-api (integer ports, object selectors)
 	body, _ := json.Marshal(lbReq)
 	want := `{"name":"test-lb","vip":"198.18.0.1","selectors":[{"key":"app","value":"web"}],"endpoints":["192.168.1.1","192.168.1.2"],"ports":[{"port":80,"targetPort":8080,"protocol":"TCP"}]}`
 	if string(body) != want {

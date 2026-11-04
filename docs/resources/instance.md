@@ -3,12 +3,12 @@
 page_title: "spx_instance Resource - spx"
 subcategory: ""
 description: |-
-  Gère une ressource de type Instance sur SPX.
+  Manages an Instance on SPX.
 ---
 
 # spx_instance (Resource)
 
-Gère une ressource de type Instance sur SPX.
+Manages an Instance on SPX.
 
 
 

@@ -35,7 +35,7 @@ type StaticRoute struct {
 
 type VPCRequest struct {
 	Name string `json:"name"`
-	// StaticRoutes: nil = routes existantes conservées par le proxy, [] = toutes supprimées
+	// StaticRoutes: nil = existing routes kept by the proxy, [] = all removed
 	StaticRoutes *[]StaticRoute `json:"static_routes,omitempty"`
 }
 
@@ -178,7 +178,7 @@ type Instance struct {
 	Advanced       *InstanceAdvanced `json:"advanced,omitempty"`
 }
 
-// InstanceAdvanced représente les options avancées (TPM / EFI). Un champ nil = hérité du vm_type.
+// InstanceAdvanced holds the advanced options (TPM / EFI). A nil field = inherited from the vm_type.
 type InstanceAdvanced struct {
 	TPM InstanceTPM `json:"tpm"`
 	EFI InstanceEFI `json:"efi"`
@@ -229,7 +229,7 @@ type InstanceRequest struct {
 	CloudInit   InstanceCloudInit `json:"cloud_init"`
 	SSHKeys     []string          `json:"ssh_keys"`
 	Labels      []string          `json:"labels"`
-	// ContainerDisks: nil = jeu recommandé (création) / montages conservés (mise à jour)
+	// ContainerDisks: nil = recommended set (create) / existing mounts kept (update)
 	ContainerDisks *[]string         `json:"container_disks,omitempty"`
 	Advanced       *InstanceAdvanced `json:"advanced,omitempty"`
 }

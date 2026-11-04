@@ -3,12 +3,12 @@
 page_title: "spx_disk Resource - spx"
 subcategory: ""
 description: |-
-  Gère une ressource Disque sur SPX.
+  Manages a Disk on SPX.
 ---
 
 # spx_disk (Resource)
 
-Gère une ressource Disque sur SPX.
+Manages a Disk on SPX.
 
 
 
@@ -17,29 +17,29 @@ Gère une ressource Disque sur SPX.
 
 ### Required
 
-- `name` (String) Le nom du disque.
-- `size` (Number) La taille du disque en Gi (ex: 10).
+- `name` (String) The name of the disk.
+- `size` (Number) The size of the disk in Gi (e.g. 10).
 
 ### Optional
 
-- `labels` (List of String) Labels du disque au format 'user.superphenix.net/clé:valeur'.
-- `source` (Block, Optional) La source du disque. (see [below for nested schema](#nestedblock--source))
-- `storage_class` (String) La StorageClass à utiliser pour le disque.
+- `labels` (List of String) The disk labels, in the format 'user.superphenix.net/key:value'.
+- `source` (Block, Optional) The source of the disk. (see [below for nested schema](#nestedblock--source))
+- `storage_class` (String) The StorageClass to use for the disk.
 
 ### Read-Only
 
-- `az` (String) La zone de disponibilité du disque.
-- `id` (String) L'ID effectif du disque.
+- `az` (String) The availability zone of the disk.
+- `id` (String) The ID of the disk.
 
 <a id="nestedblock--source"></a>
 ### Nested Schema for `source`
 
 Required:
 
-- `type` (String) Le type de source (blank, http, snapshot, clone, registry).
+- `type` (String) The source type (blank, http, snapshot, clone, registry).
 
 Optional:
 
-- `clone` (String) L'EID du disque à cloner (obligatoire pour clone).
-- `snapshot` (String) L'EID du snapshot à utiliser (obligatoire pour snapshot).
-- `url` (String) L'URL de la source (obligatoire pour http et registry).
+- `clone` (String) The EID of the disk to clone (required for clone).
+- `snapshot` (String) The EID of the snapshot to use (required for snapshot).
+- `url` (String) The source URL (required for http and registry).

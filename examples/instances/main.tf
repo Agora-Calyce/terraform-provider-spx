@@ -58,8 +58,8 @@ resource "spx_instance" "example" {
     order     = 0
     subnet_id = spx_subnet.example.id
     model     = "virtio"
-    # enabled     = false               # interface en état "link down"
-    # mac_address = "02:00:00:aa:bb:cc" # adresse MAC statique
+    # enabled     = false               # interface in "link down" state
+    # mac_address = "02:00:00:aa:bb:cc" # static MAC address
   }
 
   disks {
@@ -77,11 +77,11 @@ resource "spx_instance" "example" {
   ssh_keys = [spx_ssh_key.admin.id]
   labels   = ["user.superphenix.net/env:test", "user.superphenix.net/app:web"]
 
-  # Container disks (catalogue de l'AZ, ex. pilotes) : si non spécifié, le jeu recommandé
-  # est monté à la création et les montages actuels sont conservés ensuite ; [] démonte tout.
+  # Container disks (AZ catalog, e.g. drivers): if not set, the recommended set
+  # is mounted on creation and existing mounts are kept afterwards; [] unmounts everything.
   # container_disks = ["virtio-win"]
 
-  # Options avancées : toute valeur non spécifiée est héritée du vm_type.
+  # Advanced options: any value not set is inherited from the vm_type.
   # advanced {
   #   tpm {
   #     enabled    = true

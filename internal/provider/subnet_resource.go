@@ -46,7 +46,7 @@ func (r *subnetResource) Metadata(ctx context.Context, req resource.MetadataRequ
 
 func (r *subnetResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Gère une ressource de type Subnet sur SPX.",
+		Description: "Manages a Subnet on SPX.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

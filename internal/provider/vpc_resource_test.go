@@ -34,7 +34,7 @@ func TestAccVPCResource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// Création et vérification
+			// Create and verify
 			{
 				Config: testAccVPCResourceConfig(vpcName),
 				Check: resource.ComposeTestCheckFunc(
@@ -45,14 +45,14 @@ func TestAccVPCResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "az", testAz),
 				),
 			},
-			// Mise à jour et vérification
+			// Update and verify
 			{
 				Config: testAccVPCResourceConfig(updatedVpcName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", updatedVpcName),
 				),
 			},
-			// Importation
+			// Import
 			{
 				ResourceName:      resourceName,
 				ImportState:       true,

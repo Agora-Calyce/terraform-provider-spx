@@ -21,7 +21,7 @@ func TestMapDiskToClient(t *testing.T) {
 		},
 	}
 
-	// Simulation mapping
+	// Simulate the mapping
 	diskReq := client.DiskRequest{
 		Name:         model.Name.ValueString(),
 		Size:         int(model.Size.ValueInt64()),

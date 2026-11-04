@@ -3,12 +3,12 @@
 page_title: "spx_subnet Resource - spx"
 subcategory: ""
 description: |-
-  Gère une ressource de type Subnet sur SPX.
+  Manages a Subnet on SPX.
 ---
 
 # spx_subnet (Resource)
 
-Gère une ressource de type Subnet sur SPX.
+Manages a Subnet on SPX.
 
 
 

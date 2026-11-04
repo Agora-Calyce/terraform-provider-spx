@@ -96,7 +96,7 @@ func (r *instanceResource) Metadata(ctx context.Context, req resource.MetadataRe
 
 func (r *instanceResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Gère une ressource de type Instance sur SPX.",
+		Description: "Manages an Instance on SPX.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,
@@ -468,7 +468,7 @@ func (r *instanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 	resp.Diagnostics.Append(diags...)
 	data.ContainerDisks = containerDisks
 
-	// Options avancées : uniquement si gérées dans la configuration
+	// Advanced options: only if managed in the configuration
 	if data.Advanced != nil {
 		data.Advanced = advancedFromClient(instance.Advanced, data.Advanced)
 	}
@@ -500,8 +500,8 @@ func (r *instanceResource) Read(ctx context.Context, req resource.ReadRequest, r
 	}
 	data.Disks = newDisks
 
-	// CloudInit : uniquement si géré dans la configuration (sinon diff permanent sur un bloc absent).
-	// L'API SPX ne renvoie plus toujours bus/config : on garde alors la valeur connue.
+	// CloudInit: only if managed in the configuration (otherwise a permanent diff on an absent block).
+	// The SPX API no longer always returns bus/config: the known value is kept in that case.
 	if data.CloudInit != nil {
 		data.CloudInit = cloudInitFromClient(instance.CloudInit, data.CloudInit)
 	}

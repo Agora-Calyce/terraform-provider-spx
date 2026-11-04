@@ -33,7 +33,7 @@ func TestSecurityGroupResource_SchemaValid(t *testing.T) {
 	}
 }
 
-// Le modèle doit correspondre exactement au schéma (champs tfsdk), sinon toute lecture de plan/état échoue.
+// The model must match the schema exactly (tfsdk fields), otherwise any plan/state read fails.
 func TestSecurityGroupResource_ModelMatchesSchema(t *testing.T) {
 	ctx := context.Background()
 	s := securityGroupSchema(t).Schema
@@ -152,7 +152,7 @@ func TestApplySecurityGroupFromClient_PreservesProtocolCase(t *testing.T) {
 }
 
 func TestLegacyFirewallStateToModel(t *testing.T) {
-	// Ancien état avec match_labels sous forme d'objets {key, value} et ports en chaînes
+	// Old state with match_labels as {key, value} objects and ports as strings
 	raw := []byte(`{
 		"id": "fw-1",
 		"name": "legacy",
@@ -212,7 +212,7 @@ func TestLegacyFirewallStateToModel_MissingID(t *testing.T) {
 	}
 }
 
-// Exécute le StateMover comme le ferait Terraform pour `moved { from = spx_firewall.x  to = spx_security_group.x }`
+// Runs the StateMover as Terraform would for `moved { from = spx_firewall.x  to = spx_security_group.x }`
 func TestSecurityGroupResource_MoveState(t *testing.T) {
 	ctx := context.Background()
 	s := securityGroupSchema(t).Schema
@@ -228,7 +228,7 @@ func TestSecurityGroupResource_MoveState(t *testing.T) {
 		}
 	}
 
-	// Source gérée
+	// Handled source
 	resp := newResp()
 	movers[0].StateMover(ctx, resource.MoveStateRequest{
 		SourceProviderAddress: "registry.terraform.io/agora-calyce/spx",
@@ -250,7 +250,7 @@ func TestSecurityGroupResource_MoveState(t *testing.T) {
 		t.Errorf("unexpected moved state: %+v", moved)
 	}
 
-	// Source non gérée : le mover ne fait rien (le framework signalera l'absence de mover)
+	// Unhandled source: the mover does nothing (the framework will report the missing mover)
 	resp = newResp()
 	movers[0].StateMover(ctx, resource.MoveStateRequest{
 		SourceProviderAddress: "registry.terraform.io/hashicorp/aws",
@@ -318,7 +318,7 @@ resource "spx_security_group" "test" {
 `, testOrgaId, testProjectId, testAz, name)
 }
 
-// Après un import, l'état ne contient que l'id : la lecture du modèle ne doit pas échouer (bloc target null).
+// After an import, the state only contains the id: reading the model must not fail (null target block).
 func TestSecurityGroupResource_ImportedStateReadable(t *testing.T) {
 	ctx := context.Background()
 	s := securityGroupSchema(t).Schema

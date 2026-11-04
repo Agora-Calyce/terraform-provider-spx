@@ -49,7 +49,7 @@ func (r *eipResource) Metadata(ctx context.Context, req resource.MetadataRequest
 
 func (r *eipResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Gère une ressource Elastic IP sur SPX.",
+		Description: "Manages an Elastic IP on SPX.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

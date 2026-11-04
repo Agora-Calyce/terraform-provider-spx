@@ -15,8 +15,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 )
 
-// setModel écrit le modèle dans un état construit à partir du schéma réel de la ressource :
-// échoue si un champ tfsdk du modèle ne correspond pas au schéma.
+// setModel writes the model into a state built from the resource's real schema:
+// fails if a tfsdk field of the model does not match the schema.
 func setModel(t *testing.T, r resource.Resource, model interface{}) tfsdk.State {
 	t.Helper()
 	ctx := context.Background()
@@ -88,7 +88,7 @@ func TestResolveInstanceUnknowns(t *testing.T) {
 		ContainerDisks: types.ListUnknown(types.StringType),
 		Network: []instanceNetworkModel{
 			{Model: types.StringUnknown(), Enabled: types.BoolUnknown(), MACAddress: types.StringUnknown()},
-			// Valeurs configurées : ne doivent pas être écrasées
+			// Configured values: must not be overwritten
 			{Model: types.StringValue("e1000"), Enabled: types.BoolValue(false), MACAddress: types.StringValue("02:00:00:00:00:01")},
 		},
 		Disks:     []instanceDiskModel{{Bus: types.StringUnknown(), Cdrom: types.BoolUnknown()}},
@@ -186,7 +186,7 @@ func TestBuildDiskRequest_SendsStorageClassAndSource(t *testing.T) {
 		Source:       &DiskSourceModel{Type: types.StringValue("blank")},
 		Labels:       []types.String{types.StringValue("user.superphenix.net/env:prod")},
 	})
-	// Le proxy valide storage_class et source aussi lors des mises à jour
+	// The proxy also validates storage_class and source on update
 	if req.StorageClass != "fast" || req.Source == nil || req.Source.Type != "blank" {
 		t.Errorf("storage_class/source must always be sent: %+v", req)
 	}

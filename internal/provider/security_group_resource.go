@@ -29,10 +29,10 @@ var _ resource.ResourceWithImportState = &SecurityGroupResource{}
 var _ resource.ResourceWithValidateConfig = &SecurityGroupResource{}
 var _ resource.ResourceWithMoveState = &SecurityGroupResource{}
 
-// matchLabelRegexp valide un label au format "clé:valeur"
+// matchLabelRegexp validates a label in the "key:value" format
 var matchLabelRegexp = regexp.MustCompile(`^[^:]+:.*$`)
 
-// legacyFirewallTypeName est l'ancien nom de la ressource, avant le renommage upstream Firewall -> Security Group
+// legacyFirewallTypeName is the former resource name, before the upstream Firewall -> Security Group rename
 const legacyFirewallTypeName = "spx_firewall"
 
 func NewSecurityGroupResource() resource.Resource {
@@ -47,7 +47,7 @@ type SecurityGroupResourceModel struct {
 	ID          types.String       `tfsdk:"id"`
 	Name        types.String       `tfsdk:"name"`
 	Description types.String       `tfsdk:"description"`
-	Target      *TargetModel       `tfsdk:"target"` // pointeur : null après un import
+	Target      *TargetModel       `tfsdk:"target"` // pointer: null after an import
 	Ingress     []IngressRuleModel `tfsdk:"ingress"`
 	Egress      []EgressRuleModel  `tfsdk:"egress"`
 	SubnetIDs   []types.String     `tfsdk:"subnet_ids"`
@@ -103,36 +103,36 @@ func (r *SecurityGroupResource) Metadata(ctx context.Context, req resource.Metad
 
 func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Gère un groupe de sécurité (anciennement pare-feu, `spx_firewall`) sur SPX.",
-		MarkdownDescription: "Gère un groupe de sécurité (anciennement pare-feu, `spx_firewall`) sur SPX.\n\n" +
-			"## Migration depuis `spx_firewall`\n\n" +
-			"La ressource `spx_firewall` a été renommée `spx_security_group`. Pour migrer sans recréer le groupe " +
-			"de sécurité (Terraform >= 1.8), renommez le bloc `resource` puis ajoutez un bloc `moved` :\n\n" +
+		Description: "Manages a security group (formerly firewall, `spx_firewall`) on SPX.",
+		MarkdownDescription: "Manages a security group (formerly firewall, `spx_firewall`) on SPX.\n\n" +
+			"## Migrating from `spx_firewall`\n\n" +
+			"The `spx_firewall` resource has been renamed to `spx_security_group`. To migrate without recreating the " +
+			"security group (Terraform >= 1.8), rename the `resource` block and add a `moved` block:\n\n" +
 			"```terraform\nmoved {\n  from = spx_firewall.example\n  to   = spx_security_group.example\n}\n```\n\n" +
-			"`terraform plan` doit alors indiquer que la ressource a été déplacée, sans autre modification.",
+			"`terraform plan` should then report that the resource has moved, with no other changes.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "ID effectif du groupe de sécurité.",
+				MarkdownDescription: "The ID of the security group.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "Nom du groupe de sécurité.",
+				MarkdownDescription: "The name of the security group.",
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(1, 63),
 				},
 			},
 			"description": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Description du groupe de sécurité.",
+				MarkdownDescription: "The description of the security group.",
 			},
 			"subnet_ids": schema.ListAttribute{
 				ElementType:         types.StringType,
 				Optional:            true,
-				MarkdownDescription: "IDs des subnets auxquels le groupe de sécurité s'applique (10 maximum). Si non spécifié, il s'applique à tous les subnets du projet.",
+				MarkdownDescription: "The IDs of the subnets the security group applies to (10 maximum). If not set, it applies to all subnets of the project.",
 				Validators: []validator.List{
 					listvalidator.SizeBetween(1, 10),
 				},
@@ -140,9 +140,9 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 			"orga_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "ID de l'organisation. Si non spécifié, utilise la valeur du provider.",
+				MarkdownDescription: "The organization ID. If not set, the provider value is used.",
 				PlanModifiers: []planmodifier.String{
-					// Sans UseStateForUnknown, la valeur non configurée est inconnue au plan et force un remplacement
+					// Without UseStateForUnknown, the unconfigured value is unknown at plan time and forces a replacement
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -150,9 +150,9 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 			"az": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Zone de disponibilité. Si non spécifié, utilise la valeur du provider.",
+				MarkdownDescription: "The availability zone. If not set, the provider value is used.",
 				PlanModifiers: []planmodifier.String{
-					// Sans UseStateForUnknown, la valeur non configurée est inconnue au plan et force un remplacement
+					// Without UseStateForUnknown, the unconfigured value is unknown at plan time and forces a replacement
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -160,9 +160,9 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 			"project_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "ID du projet. Si non spécifié, utilise la valeur du provider.",
+				MarkdownDescription: "The project ID. If not set, the provider value is used.",
 				PlanModifiers: []planmodifier.String{
-					// Sans UseStateForUnknown, la valeur non configurée est inconnue au plan et force un remplacement
+					// Without UseStateForUnknown, the unconfigured value is unknown at plan time and forces a replacement
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -170,23 +170,23 @@ func (r *SecurityGroupResource) Schema(ctx context.Context, req resource.SchemaR
 		},
 		Blocks: map[string]schema.Block{
 			"target": schema.SingleNestedBlock{
-				MarkdownDescription: "Sélecteur des instances ciblées par le groupe de sécurité.",
+				MarkdownDescription: "Selects the instances targeted by the security group.",
 				Attributes:          labelSelectorAttributes(),
 				Blocks:              labelSelectorBlocks(),
 			},
 			"ingress": schema.ListNestedBlock{
-				MarkdownDescription: "Règles de trafic entrant.",
+				MarkdownDescription: "Inbound traffic rules.",
 				NestedObject:        ruleNestedBlock("from"),
 			},
 			"egress": schema.ListNestedBlock{
-				MarkdownDescription: "Règles de trafic sortant.",
+				MarkdownDescription: "Outbound traffic rules.",
 				NestedObject:        ruleNestedBlock("to"),
 			},
 		},
 	}
 }
 
-// ruleNestedBlock construit le schéma d'une règle ingress/egress ; peerBlockName vaut "from" ou "to".
+// ruleNestedBlock builds the schema of an ingress/egress rule; peerBlockName is "from" or "to".
 func ruleNestedBlock(peerBlockName string) schema.NestedBlockObject {
 	return schema.NestedBlockObject{
 		Attributes: map[string]schema.Attribute{
@@ -214,7 +214,7 @@ func ruleNestedBlock(peerBlockName string) schema.NestedBlockObject {
 						"end_port": schema.Int32Attribute{
 							Optional:            true,
 							Computed:            true,
-							MarkdownDescription: "Fin de la plage de ports. Vaut `port` si non spécifié.",
+							MarkdownDescription: "The end of the port range. Defaults to `port` if not set.",
 							PlanModifiers: []planmodifier.Int32{
 								endPortPlanModifier{},
 							},
@@ -227,7 +227,7 @@ func ruleNestedBlock(peerBlockName string) schema.NestedBlockObject {
 							Optional:            true,
 							Computed:            true,
 							Default:             stringdefault.StaticString("TCP"),
-							MarkdownDescription: "Protocole : `TCP` (défaut), `UDP` ou `SCTP`.",
+							MarkdownDescription: "The protocol: `TCP` (default), `UDP` or `SCTP`.",
 							Validators: []validator.String{
 								stringvalidator.OneOfCaseInsensitive("TCP", "UDP", "SCTP"),
 							},
@@ -263,10 +263,10 @@ func labelSelectorAttributes() map[string]schema.Attribute {
 		"match_labels": schema.ListAttribute{
 			ElementType:         types.StringType,
 			Optional:            true,
-			MarkdownDescription: "Liste de labels de correspondance au format `clé:valeur`.",
+			MarkdownDescription: "The list of match labels, in the format `key:value`.",
 			Validators: []validator.List{
 				listvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("match_expressions")),
-				listvalidator.ValueStringsAre(stringvalidator.RegexMatches(matchLabelRegexp, "doit être au format clé:valeur")),
+				listvalidator.ValueStringsAre(stringvalidator.RegexMatches(matchLabelRegexp, "must be in the key:value format")),
 			},
 		},
 	}
@@ -321,8 +321,8 @@ func (r *SecurityGroupResource) ValidateConfig(ctx context.Context, req resource
 	if !hasLabels && !hasExpressions {
 		resp.Diagnostics.AddAttributeError(
 			path.Root("target"),
-			"Configuration Invalide",
-			"Le bloc 'target' doit contenir soit 'match_labels', soit 'match_expressions'.",
+			"Invalid Configuration",
+			"The 'target' block must contain either 'match_labels' or 'match_expressions'.",
 		)
 	}
 
@@ -330,8 +330,8 @@ func (r *SecurityGroupResource) ValidateConfig(ctx context.Context, req resource
 		for _, ingress := range model.Ingress {
 			if !ingress.AllowAll.IsNull() && ingress.AllowAll.ValueBool() {
 				resp.Diagnostics.AddError(
-					"Configuration d'ingress invalide",
-					"Une règle ingress.allow_all=true ne peut pas coexister avec d'autres règles ingress.",
+					"Invalid Ingress Configuration",
+					"An ingress.allow_all=true rule cannot coexist with other ingress rules.",
 				)
 				break
 			}
@@ -342,8 +342,8 @@ func (r *SecurityGroupResource) ValidateConfig(ctx context.Context, req resource
 		for _, egress := range model.Egress {
 			if !egress.AllowAll.IsNull() && egress.AllowAll.ValueBool() {
 				resp.Diagnostics.AddError(
-					"Configuration d'egress invalide",
-					"Une règle egress.allow_all=true ne peut pas coexister avec d'autres règles egress.",
+					"Invalid Egress Configuration",
+					"An egress.allow_all=true rule cannot coexist with other egress rules.",
 				)
 				break
 			}
@@ -354,8 +354,8 @@ func (r *SecurityGroupResource) ValidateConfig(ctx context.Context, req resource
 		for _, from := range ingress.From {
 			if !peerHasSelector(from) {
 				resp.Diagnostics.AddError(
-					"Configuration Invalide",
-					"Chaque bloc 'from' dans une règle ingress doit contenir soit 'pod_selector', soit 'ip_block.cidr'.",
+					"Invalid Configuration",
+					"Each 'from' block in an ingress rule must contain either 'pod_selector' or 'ip_block.cidr'.",
 				)
 			}
 		}
@@ -365,8 +365,8 @@ func (r *SecurityGroupResource) ValidateConfig(ctx context.Context, req resource
 		for _, to := range egress.To {
 			if !peerHasSelector(to) {
 				resp.Diagnostics.AddError(
-					"Configuration Invalide",
-					"Chaque bloc 'to' dans une règle egress doit contenir soit 'pod_selector', soit 'ip_block.cidr'.",
+					"Invalid Configuration",
+					"Each 'to' block in an egress rule must contain either 'pod_selector' or 'ip_block.cidr'.",
 				)
 			}
 		}
@@ -375,12 +375,12 @@ func (r *SecurityGroupResource) ValidateConfig(ctx context.Context, req resource
 
 func peerHasSelector(p PeerModel) bool {
 	hasPodSelector := p.PodSelector != nil && (len(p.PodSelector.MatchLabels) > 0 || len(p.PodSelector.MatchExpressions) > 0)
-	// Une valeur inconnue (issue d'une autre ressource) est considérée comme renseignée
+	// An unknown value (coming from another resource) is treated as set
 	hasIPBlock := p.IPBlock != nil && (p.IPBlock.CIDR.IsUnknown() || (!p.IPBlock.CIDR.IsNull() && p.IPBlock.CIDR.ValueString() != ""))
 	return hasPodSelector || hasIPBlock
 }
 
-// scope retourne orga/az/projet du modèle, ou les valeurs du provider à défaut
+// scope returns the model's orga/az/project, falling back to the provider values
 func (r *SecurityGroupResource) scope(data *SecurityGroupResourceModel) (string, string, string) {
 	orgaId := data.OrgaId.ValueString()
 	if orgaId == "" {
@@ -411,8 +411,8 @@ func buildSecurityGroupRequest(data SecurityGroupResourceModel) client.SecurityG
 	return req
 }
 
-// applySecurityGroupFromClient met à jour le modèle à partir de la réponse de l'API,
-// en conservant la casse du protocole saisie par l'utilisateur.
+// applySecurityGroupFromClient updates the model from the API response,
+// preserving the protocol case entered by the user.
 func applySecurityGroupFromClient(data *SecurityGroupResourceModel, sg *client.SecurityGroup) {
 	prior := *data
 	data.Name = types.StringValue(sg.Name)
@@ -456,7 +456,7 @@ func (r *SecurityGroupResource) Create(ctx context.Context, req resource.CreateR
 
 	sg, err := r.client.CreateSecurityGroup(ctx, orgaId, az, projectId, buildSecurityGroupRequest(data))
 	if err != nil {
-		resp.Diagnostics.AddError("Erreur lors de la création du groupe de sécurité", err.Error())
+		resp.Diagnostics.AddError("Error creating security group", err.Error())
 		return
 	}
 
@@ -476,12 +476,12 @@ func (r *SecurityGroupResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	// Après un import, seul l'ID est connu : on complète avec les valeurs du provider
+	// After an import, only the ID is known: fill in the rest with the provider values
 	orgaId, az, projectId := r.scope(&data)
 
 	sg, err := r.client.GetSecurityGroup(ctx, orgaId, az, projectId, data.ID.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Erreur lors de la lecture du groupe de sécurité", err.Error())
+		resp.Diagnostics.AddError("Error reading security group", err.Error())
 		return
 	}
 
@@ -507,7 +507,7 @@ func (r *SecurityGroupResource) Update(ctx context.Context, req resource.UpdateR
 
 	sg, err := r.client.UpdateSecurityGroup(ctx, data.OrgaId.ValueString(), data.Az.ValueString(), data.ProjectId.ValueString(), data.ID.ValueString(), buildSecurityGroupRequest(data))
 	if err != nil {
-		resp.Diagnostics.AddError("Erreur lors de la mise à jour du groupe de sécurité", err.Error())
+		resp.Diagnostics.AddError("Error updating security group", err.Error())
 		return
 	}
 
@@ -525,7 +525,7 @@ func (r *SecurityGroupResource) Delete(ctx context.Context, req resource.DeleteR
 
 	err := r.client.DeleteSecurityGroup(ctx, data.OrgaId.ValueString(), data.Az.ValueString(), data.ProjectId.ValueString(), data.ID.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Erreur lors de la suppression du groupe de sécurité", err.Error())
+		resp.Diagnostics.AddError("Error deleting security group", err.Error())
 		return
 	}
 }
@@ -534,31 +534,31 @@ func (r *SecurityGroupResource) ImportState(ctx context.Context, req resource.Im
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-// MoveState permet de migrer une ressource spx_firewall existante avec un bloc `moved` :
+// MoveState migrates an existing spx_firewall resource with a `moved` block:
 //
 //	moved {
 //	  from = spx_firewall.example
 //	  to   = spx_security_group.example
 //	}
 //
-// L'état brut est relu manuellement car l'ancien schéma a varié (match_labels sous forme
-// de chaînes "clé:valeur" ou d'objets {key, value}).
+// The raw state is read manually because the old schema varied (match_labels as
+// "key:value" strings or {key, value} objects).
 func (r *SecurityGroupResource) MoveState(ctx context.Context) []resource.StateMover {
 	return []resource.StateMover{
 		{
 			StateMover: func(ctx context.Context, req resource.MoveStateRequest, resp *resource.MoveStateResponse) {
 				if req.SourceTypeName != legacyFirewallTypeName || !strings.HasSuffix(req.SourceProviderAddress, "/spx") {
-					// Pas une source gérée par ce mover : le framework renverra une erreur explicite
+					// Not a source handled by this mover: the framework will return an explicit error
 					return
 				}
 				if req.SourceRawState == nil {
-					resp.Diagnostics.AddError("État source manquant", "Impossible de migrer spx_firewall : état source absent.")
+					resp.Diagnostics.AddError("Missing source state", "Unable to migrate spx_firewall: source state is missing.")
 					return
 				}
 
 				model, err := legacyFirewallStateToModel(req.SourceRawState.JSON)
 				if err != nil {
-					resp.Diagnostics.AddError("Impossible de migrer spx_firewall vers spx_security_group", err.Error())
+					resp.Diagnostics.AddError("Unable to migrate spx_firewall to spx_security_group", err.Error())
 					return
 				}
 
@@ -568,7 +568,7 @@ func (r *SecurityGroupResource) MoveState(ctx context.Context) []resource.StateM
 	}
 }
 
-// --- Migration de l'ancien état spx_firewall ---
+// --- Migration of the old spx_firewall state ---
 
 type legacyLabelSelector struct {
 	MatchLabels      []json.RawMessage `json:"match_labels"`
@@ -616,10 +616,10 @@ type legacyFirewallState struct {
 func legacyFirewallStateToModel(raw []byte) (SecurityGroupResourceModel, error) {
 	var st legacyFirewallState
 	if err := json.Unmarshal(raw, &st); err != nil {
-		return SecurityGroupResourceModel{}, fmt.Errorf("état spx_firewall illisible : %w", err)
+		return SecurityGroupResourceModel{}, fmt.Errorf("unreadable spx_firewall state: %w", err)
 	}
 	if st.ID == nil || *st.ID == "" {
-		return SecurityGroupResourceModel{}, fmt.Errorf("l'état spx_firewall ne contient pas d'id")
+		return SecurityGroupResourceModel{}, fmt.Errorf("the spx_firewall state does not contain an id")
 	}
 
 	model := SecurityGroupResourceModel{
@@ -688,7 +688,7 @@ func legacySelectorToModel(ls legacyLabelSelector) (TargetModel, error) {
 			Value string `json:"value"`
 		}
 		if err := json.Unmarshal(raw, &kv); err != nil {
-			return m, fmt.Errorf("match_labels illisible : %s", string(raw))
+			return m, fmt.Errorf("unreadable match_labels: %s", string(raw))
 		}
 		m.MatchLabels = append(m.MatchLabels, types.StringValue(kv.Key+":"+kv.Value))
 	}
@@ -707,11 +707,11 @@ func legacyPortsToModel(ports []legacyPort) ([]SgPortModel, error) {
 	for _, p := range ports {
 		port, err := legacyInt32(p.Port)
 		if err != nil {
-			return nil, fmt.Errorf("port illisible : %w", err)
+			return nil, fmt.Errorf("unreadable port: %w", err)
 		}
 		endPort, err := legacyInt32(p.EndPort)
 		if err != nil {
-			return nil, fmt.Errorf("end_port illisible : %w", err)
+			return nil, fmt.Errorf("unreadable end_port: %w", err)
 		}
 		protocol := types.StringValue("TCP")
 		if p.Protocol != nil && *p.Protocol != "" {
@@ -722,7 +722,7 @@ func legacyPortsToModel(ports []legacyPort) ([]SgPortModel, error) {
 	return res, nil
 }
 
-// legacyInt32 accepte un nombre, une chaîne numérique ou null
+// legacyInt32 accepts a number, a numeric string or null
 func legacyInt32(raw json.RawMessage) (types.Int32, error) {
 	if len(raw) == 0 || string(raw) == "null" {
 		return types.Int32Null(), nil
@@ -767,7 +767,7 @@ func legacyPeersToModel(peers []legacyPeer) ([]PeerModel, error) {
 	return res, nil
 }
 
-// --- Helpers de conversion modèle <-> client ---
+// --- Model <-> client conversion helpers ---
 
 func mapStringsToClient(values []types.String) []string {
 	if values == nil {
@@ -780,7 +780,7 @@ func mapStringsToClient(values []types.String) []string {
 	return res
 }
 
-// mapStringsFromClient retourne nil (null côté Terraform) pour une liste vide
+// mapStringsFromClient returns nil (null on the Terraform side) for an empty list
 func mapStringsFromClient(values []string) []types.String {
 	if len(values) == 0 {
 		return nil
@@ -892,7 +892,7 @@ func mapPortsToClient(ports []SgPortModel) []client.SgPort {
 	}
 	res := make([]client.SgPort, len(ports))
 	for i, p := range ports {
-		// end_port null/inconnu => 0, le proxy le normalise à la valeur de port
+		// end_port null/unknown => 0, the proxy normalizes it to the port value
 		res[i] = client.SgPort{
 			Port:     p.Port.ValueInt32(),
 			EndPort:  p.EndPort.ValueInt32(),
@@ -967,12 +967,12 @@ func mapPeersFromClient(peers []client.Peer) []PeerModel {
 	return res
 }
 
-// caseInsensitivePlanModifier conserve la valeur de l'état quand la configuration ne diffère que par la casse
-// (l'API renvoie le protocole en majuscules, y compris après un import).
+// caseInsensitivePlanModifier keeps the state value when the configuration differs only by case
+// (the API returns the protocol in uppercase, including after an import).
 type caseInsensitivePlanModifier struct{}
 
 func (m caseInsensitivePlanModifier) Description(ctx context.Context) string {
-	return "Ignore les différences de casse avec la valeur de l'état."
+	return "Ignores case differences with the state value."
 }
 
 func (m caseInsensitivePlanModifier) MarkdownDescription(ctx context.Context) string {
@@ -988,13 +988,13 @@ func (m caseInsensitivePlanModifier) PlanModifyString(ctx context.Context, req p
 	}
 }
 
-// endPortPlanModifier : end_port non configuré vaut port côté API. Tant que port ne change pas,
-// on reprend la valeur de l'état plutôt que de l'afficher comme inconnue à chaque plan.
-// (UseStateForUnknown serait faux : si port change, end_port doit être recalculé.)
+// endPortPlanModifier: an unconfigured end_port equals port on the API side. As long as port does not change,
+// the state value is reused rather than showing it as unknown on every plan.
+// (UseStateForUnknown would be wrong: if port changes, end_port must be recomputed.)
 type endPortPlanModifier struct{}
 
 func (m endPortPlanModifier) Description(ctx context.Context) string {
-	return "Conserve end_port de l'état tant que port est inchangé."
+	return "Keeps end_port from the state as long as port is unchanged."
 }
 
 func (m endPortPlanModifier) MarkdownDescription(ctx context.Context) string {

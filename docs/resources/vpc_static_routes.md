@@ -3,12 +3,12 @@
 page_title: "spx_vpc_static_routes Resource - spx"
 subcategory: ""
 description: |-
-  Gère l'ensemble des routes statiques d'un VPC SPX. Les routes non déclarées ici sont supprimées ; les routes générées automatiquement par les NAT Gateways ne sont pas concernées.
+  Manages the full set of static routes of an SPX VPC. Routes not declared here are removed; routes generated automatically by NAT Gateways are not affected.
 ---
 
 # spx_vpc_static_routes (Resource)
 
-Gère l'ensemble des routes statiques d'un VPC SPX. Les routes non déclarées ici sont supprimées ; les routes générées automatiquement par les NAT Gateways ne sont pas concernées.
+Manages the full set of static routes of an SPX VPC. Routes not declared here are removed; routes generated automatically by NAT Gateways are not affected.
 
 
 
@@ -17,28 +17,28 @@ Gère l'ensemble des routes statiques d'un VPC SPX. Les routes non déclarées i
 
 ### Required
 
-- `vpc_id` (String) ID du VPC.
+- `vpc_id` (String) The ID of the VPC.
 
 ### Optional
 
-- `az` (String) Zone de disponibilité. Si non spécifié, utilise la valeur du provider.
-- `orga_id` (String) ID de l'organisation. Si non spécifié, utilise la valeur du provider.
-- `project_id` (String) ID du projet. Si non spécifié, utilise la valeur du provider.
-- `route` (Block Set) Route statique. (see [below for nested schema](#nestedblock--route))
+- `az` (String) The availability zone. If not set, the provider value is used.
+- `orga_id` (String) The organization ID. If not set, the provider value is used.
+- `project_id` (String) The project ID. If not set, the provider value is used.
+- `route` (Block Set) A static route. (see [below for nested schema](#nestedblock--route))
 
 ### Read-Only
 
-- `id` (String) Identique à vpc_id.
+- `id` (String) Same as vpc_id.
 
 <a id="nestedblock--route"></a>
 ### Nested Schema for `route`
 
 Required:
 
-- `cidr` (String) CIDR de destination (ou de source pour policySrc), sous forme canonique (ex. 192.168.0.0/24).
-- `next_hop_ip` (String) IP du prochain saut. Doit appartenir à l'un des subnets du VPC.
-- `route_table` (String) ID du subnet du VPC auquel la route s'applique.
+- `cidr` (String) The destination CIDR (or source CIDR for policySrc), in canonical form (e.g. 192.168.0.0/24).
+- `next_hop_ip` (String) The next hop IP. Must belong to one of the VPC subnets.
+- `route_table` (String) The ID of the VPC subnet the route applies to.
 
 Optional:
 
-- `policy` (String) Politique de routage : policyDst (défaut, routage sur la destination) ou policySrc.
+- `policy` (String) The routing policy: policyDst (default, routes on the destination) or policySrc.

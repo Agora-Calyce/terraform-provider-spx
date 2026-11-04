@@ -40,7 +40,7 @@ func TestMapInstanceToClient(t *testing.T) {
 		},
 	}
 
-	// Simulation de la logique de mapping dans Create
+	// Simulate the mapping logic in Create
 	instanceReq := client.InstanceRequest{
 		Name:        model.Name.ValueString(),
 		RunStrategy: model.RunStrategy.ValueString(),
@@ -122,7 +122,7 @@ func TestMapInstanceFromClient(t *testing.T) {
 		Labels:  []string{"user.superphenix.net/env=prod"},
 	}
 
-	// Simulation de la logique de mapping dans Read
+	// Simulate the mapping logic in Read
 	var model instanceResourceModel
 	model.ID = types.StringValue(apiInstance.ID)
 	model.Name = types.StringValue(apiInstance.Name)

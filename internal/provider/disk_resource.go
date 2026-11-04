@@ -18,7 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// customLabelRegexp valide un label utilisateur SPX : "user.superphenix.net/clé:valeur" (un seul ':')
+// customLabelRegexp validates an SPX user label: "user.superphenix.net/key:value" (a single ':')
 var customLabelRegexp = regexp.MustCompile(`^user\.superphenix\.net/[^:]+:[^:]*$`)
 
 var _ resource.Resource = &DiskResource{}
@@ -54,27 +54,27 @@ func (r *DiskResource) Metadata(ctx context.Context, req resource.MetadataReques
 
 func (r *DiskResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Gère une ressource Disque sur SPX.",
+		Description: "Manages a Disk on SPX.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "L'ID effectif du disque.",
+				Description: "The ID of the disk.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"name": schema.StringAttribute{
 				Required:    true,
-				Description: "Le nom du disque.",
+				Description: "The name of the disk.",
 			},
 			"size": schema.Int64Attribute{
 				Required:    true,
-				Description: "La taille du disque en Gi (ex: 10).",
+				Description: "The size of the disk in Gi (e.g. 10).",
 			},
 			"storage_class": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "La StorageClass à utiliser pour le disque.",
+				Description: "The StorageClass to use for the disk.",
 				Default:     stringdefault.StaticString("default"),
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
@@ -82,7 +82,7 @@ func (r *DiskResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 			},
 			"az": schema.StringAttribute{
 				Computed:    true,
-				Description: "La zone de disponibilité du disque.",
+				Description: "The availability zone of the disk.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -90,7 +90,7 @@ func (r *DiskResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 			"labels": schema.ListAttribute{
 				ElementType: types.StringType,
 				Optional:    true,
-				Description: "Labels du disque au format 'user.superphenix.net/clé:valeur'.",
+				Description: "The disk labels, in the format 'user.superphenix.net/key:value'.",
 				Validators: []validator.List{
 					listvalidator.SizeAtLeast(1),
 					listvalidator.ValueStringsAre(stringvalidator.RegexMatches(customLabelRegexp, "keys must start with 'user.superphenix.net/' and use the key:value format")),
@@ -99,32 +99,32 @@ func (r *DiskResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 		},
 		Blocks: map[string]schema.Block{
 			"source": schema.SingleNestedBlock{
-				Description: "La source du disque.",
+				Description: "The source of the disk.",
 				Attributes: map[string]schema.Attribute{
 					"type": schema.StringAttribute{
 						Required:    true,
-						Description: "Le type de source (blank, http, snapshot, clone, registry).",
+						Description: "The source type (blank, http, snapshot, clone, registry).",
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),
 						},
 					},
 					"url": schema.StringAttribute{
 						Optional:    true,
-						Description: "L'URL de la source (obligatoire pour http et registry).",
+						Description: "The source URL (required for http and registry).",
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),
 						},
 					},
 					"clone": schema.StringAttribute{
 						Optional:    true,
-						Description: "L'EID du disque à cloner (obligatoire pour clone).",
+						Description: "The EID of the disk to clone (required for clone).",
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),
 						},
 					},
 					"snapshot": schema.StringAttribute{
 						Optional:    true,
-						Description: "L'EID du snapshot à utiliser (obligatoire pour snapshot).",
+						Description: "The EID of the snapshot to use (required for snapshot).",
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),
 						},
@@ -198,7 +198,7 @@ func (r *DiskResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 	data.Labels = mapStringsFromClient(disk.Labels)
 
 	if disk.Source != nil {
-		// "" => null : sinon url/clone/snapshot (RequiresReplace) diffèrent de la config et forcent le remplacement du disque
+		// "" => null: otherwise url/clone/snapshot (RequiresReplace) differ from the config and force the disk to be replaced
 		data.Source = &DiskSourceModel{
 			Type:     types.StringValue(disk.Source.Type),
 			URL:      optionalStringFromClient(disk.Source.URL),
@@ -217,7 +217,7 @@ func (r *DiskResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		return
 	}
 
-	// storage_class et source ne sont pas modifiables, mais le proxy les valide aussi à la mise à jour
+	// storage_class and source cannot be changed, but the proxy also validates them on update
 	diskReq := buildDiskRequest(data)
 
 	disk, err := r.client.UpdateDisk(ctx, r.client.OrgaId, r.client.Az, r.client.ProjectId, data.ID.ValueString(), diskReq)
@@ -226,7 +226,7 @@ func (r *DiskResource) Update(ctx context.Context, req resource.UpdateRequest, r
 		return
 	}
 
-	// az est calculé : il ne doit pas rester inconnu dans l'état
+	// az is computed: it must not stay unknown in the state
 	if data.AZ.IsUnknown() {
 		az := r.client.Az
 		if disk != nil && disk.Az != "" {
