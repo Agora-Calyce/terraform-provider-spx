@@ -3,12 +3,12 @@
 page_title: "spx_eip Resource - spx"
 subcategory: ""
 description: |-
-  Gère une ressource Elastic IP sur SPX.
+  Manages an Elastic IP on SPX.
 ---
 
 # spx_eip (Resource)
 
-Gère une ressource Elastic IP sur SPX.
+Manages an Elastic IP on SPX.
 
 
 

@@ -41,7 +41,7 @@ func TestAccSubnetResource(t *testing.T) {
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
-			// Création VPC + Subnet
+			// Create VPC + Subnet
 			{
 				Config: testAccSubnetResourceConfig(vpcName, subnetName, "10.0.1.0/24", true),
 				Check: resource.ComposeTestCheckFunc(
@@ -52,14 +52,14 @@ func TestAccSubnetResource(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resourceName, "vpc_id"),
 				),
 			},
-			// Mise à jour Subnet
+			// Update Subnet
 			{
 				Config: testAccSubnetResourceConfig(vpcName, updatedSubnetName, "10.0.1.0/24", true),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", updatedSubnetName),
 				),
 			},
-			// Importation
+			// Import
 			{
 				ResourceName:      resourceName,
 				ImportState:       true,

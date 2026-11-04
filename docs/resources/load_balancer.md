@@ -3,12 +3,12 @@
 page_title: "spx_load_balancer Resource - spx"
 subcategory: ""
 description: |-
-  Gère une ressource de type Load Balancer sur SPX.
+  Manages a Load Balancer on SPX.
 ---
 
 # spx_load_balancer (Resource)
 
-Gère une ressource de type Load Balancer sur SPX.
+Manages a Load Balancer on SPX.
 
 
 

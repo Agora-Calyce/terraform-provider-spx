@@ -40,10 +40,10 @@ func (d *vmTypesDataSource) Metadata(_ context.Context, req datasource.MetadataR
 // Schema defines the schema for the data source.
 func (d *vmTypesDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Récupère la liste des type d'Instance disponibles pour un projet et une AZ.",
+		Description: "Retrieves the list of Instance types available for a project and an AZ.",
 		Attributes: map[string]schema.Attribute{
 			"types": schema.ListAttribute{
-				Description: "Liste des types d'instance disponible.",
+				Description: "The list of available Instance types.",
 				Computed:    true,
 				ElementType: types.StringType,
 			},

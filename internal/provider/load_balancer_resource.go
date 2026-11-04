@@ -54,7 +54,7 @@ func (r *loadBalancerResource) Metadata(ctx context.Context, req resource.Metada
 
 func (r *loadBalancerResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Gère une ressource de type Load Balancer sur SPX.",
+		Description: "Manages a Load Balancer on SPX.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,
@@ -280,7 +280,7 @@ func (r *loadBalancerResource) mapLBToModel(ctx context.Context, data *loadBalan
 		data.Endpoints = types.ListNull(types.StringType)
 	}
 
-	// L'API représente les sélecteurs sous forme {key, value} ; le schéma Terraform en "key:value"
+	// The API represents selectors as {key, value}; the Terraform schema as "key:value"
 	if len(lb.Selectors) > 0 {
 		data.Selectors = make([]types.String, 0, len(lb.Selectors))
 		for _, s := range lb.Selectors {
@@ -301,7 +301,7 @@ func (r *loadBalancerResource) mapLBToModel(ctx context.Context, data *loadBalan
 	}
 }
 
-// lbRequestFromModel construit le corps de requête create/update à partir du modèle Terraform.
+// lbRequestFromModel builds the create/update request body from the Terraform model.
 func lbRequestFromModel(ctx context.Context, data *loadBalancerResourceModel, diags *diag.Diagnostics) client.LoadBalancerRequest {
 	lbReq := client.LoadBalancerRequest{
 		Name: data.Name.ValueString(),

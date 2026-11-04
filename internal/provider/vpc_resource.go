@@ -35,7 +35,7 @@ func (r *vpcResource) Metadata(ctx context.Context, req resource.MetadataRequest
 
 func (r *vpcResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Gère une ressource de type VPC sur SPX.",
+		Description: "Manages a VPC on SPX.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

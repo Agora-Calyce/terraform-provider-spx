@@ -31,12 +31,12 @@ func (d *StorageClassesDataSource) Metadata(ctx context.Context, req datasource.
 
 func (d *StorageClassesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Récupère la liste des StorageClasses disponibles pour un projet et une AZ.",
+		Description: "Retrieves the list of StorageClasses available for a project and an AZ.",
 		Attributes: map[string]schema.Attribute{
 			"names": schema.ListAttribute{
 				ElementType: types.StringType,
 				Computed:    true,
-				Description: "Liste des noms de StorageClasses.",
+				Description: "The list of StorageClass names.",
 			},
 		},
 	}
@@ -68,7 +68,7 @@ func (d *StorageClassesDataSource) Read(ctx context.Context, req datasource.Read
 		return
 	}
 
-	// Ordre stable : l'API ne garantit pas l'ordre, ce qui changerait names[0] d'un plan à l'autre
+	// Stable order: the API does not guarantee ordering, which would change names[0] from one plan to the next
 	sort.Strings(storageClasses)
 
 	names, diags := types.ListValueFrom(ctx, types.StringType, storageClasses)

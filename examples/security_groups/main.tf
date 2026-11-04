@@ -16,10 +16,10 @@ provider "spx" {
 
 resource "spx_security_group" "example" {
   name        = "example-security-group"
-  description = "Un groupe de sécurité d'exemple avec labels"
+  description = "An example security group with labels"
 
-  # Facultatif : limite le groupe de sécurité à certains subnets (10 maximum).
-  # Si non spécifié, il s'applique à tous les subnets du projet.
+  # Optional: limits the security group to specific subnets (10 maximum).
+  # If not set, it applies to all subnets of the project.
   # subnet_ids = [spx_subnet.example.id]
 
   target {
@@ -33,7 +33,7 @@ resource "spx_security_group" "example" {
       protocol = "TCP"
     }
     ports {
-      port = 443 # protocole TCP par défaut
+      port = 443 # TCP protocol by default
     }
     from {
       ip_block {
@@ -68,7 +68,7 @@ output "security_group_id" {
 
 resource "spx_security_group" "example_expression" {
   name        = "example-security-group-expression"
-  description = "Un groupe de sécurité d'exemple avec expression"
+  description = "An example security group with an expression"
 
   target {
     match_expressions {

@@ -3,12 +3,12 @@
 page_title: "spx_ssh_key Resource - spx"
 subcategory: ""
 description: |-
-  Gère une clé SSH dans SPX.
+  Manages an SSH key on SPX.
 ---
 
 # spx_ssh_key (Resource)
 
-Gère une clé SSH dans SPX.
+Manages an SSH key on SPX.
 
 
 
@@ -17,10 +17,10 @@ Gère une clé SSH dans SPX.
 
 ### Required
 
-- `name` (String) Nom de la clé SSH.
-- `public_key` (String) Contenu de la clé publique SSH.
+- `name` (String) The name of the SSH key.
+- `public_key` (String) The content of the SSH public key.
 
 ### Read-Only
 
-- `fingerprint` (String) Empreinte digitale de la clé publique.
-- `id` (String) ID effectif de la clé SSH.
+- `fingerprint` (String) The fingerprint of the public key.
+- `id` (String) The ID of the SSH key.

@@ -3,12 +3,12 @@
 page_title: "spx_vm_types Data Source - spx"
 subcategory: ""
 description: |-
-  Récupère la liste des type d'Instance disponibles pour un projet et une AZ.
+  Retrieves the list of Instance types available for a project and an AZ.
 ---
 
 # spx_vm_types (Data Source)
 
-Récupère la liste des type d'Instance disponibles pour un projet et une AZ.
+Retrieves the list of Instance types available for a project and an AZ.
 
 
 
@@ -17,4 +17,4 @@ Récupère la liste des type d'Instance disponibles pour un projet et une AZ.
 
 ### Read-Only
 
-- `types` (List of String) Liste des types d'instance disponible.
+- `types` (List of String) The list of available Instance types.

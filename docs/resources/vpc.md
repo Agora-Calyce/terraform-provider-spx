@@ -3,12 +3,12 @@
 page_title: "spx_vpc Resource - spx"
 subcategory: ""
 description: |-
-  Gère une ressource de type VPC sur SPX.
+  Manages a VPC on SPX.
 ---
 
 # spx_vpc (Resource)
 
-Gère une ressource de type VPC sur SPX.
+Manages a VPC on SPX.
 
 
 

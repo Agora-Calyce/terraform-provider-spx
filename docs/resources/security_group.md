@@ -3,25 +3,25 @@
 page_title: "spx_security_group Resource - spx"
 subcategory: ""
 description: |-
-  Gère un groupe de sécurité (anciennement pare-feu, spx_firewall) sur SPX.
-  Migration depuis spx_firewall
-  La ressource spx_firewall a été renommée spx_security_group. Pour migrer sans recréer le groupe de sécurité (Terraform >= 1.8), renommez le bloc resource puis ajoutez un bloc moved :
+  Manages a security group (formerly firewall, spx_firewall) on SPX.
+  Migrating from spx_firewall
+  The spx_firewall resource has been renamed to spx_security_group. To migrate without recreating the security group (Terraform >= 1.8), rename the resource block and add a moved block:
   
   moved {
     from = spx_firewall.example
     to   = spx_security_group.example
   }
   
-  terraform plan doit alors indiquer que la ressource a été déplacée, sans autre modification.
+  terraform plan should then report that the resource has moved, with no other changes.
 ---
 
 # spx_security_group (Resource)
 
-Gère un groupe de sécurité (anciennement pare-feu, `spx_firewall`) sur SPX.
+Manages a security group (formerly firewall, `spx_firewall`) on SPX.
 
-## Migration depuis `spx_firewall`
+## Migrating from `spx_firewall`
 
-La ressource `spx_firewall` a été renommée `spx_security_group`. Pour migrer sans recréer le groupe de sécurité (Terraform >= 1.8), renommez le bloc `resource` puis ajoutez un bloc `moved` :
+The `spx_firewall` resource has been renamed to `spx_security_group`. To migrate without recreating the security group (Terraform >= 1.8), rename the `resource` block and add a `moved` block:
 
 ```terraform
 moved {
@@ -30,7 +30,7 @@ moved {
 }
 ```
 
-`terraform plan` doit alors indiquer que la ressource a été déplacée, sans autre modification.
+`terraform plan` should then report that the resource has moved, with no other changes.
 
 
 
@@ -39,22 +39,22 @@ moved {
 
 ### Required
 
-- `name` (String) Nom du groupe de sécurité.
+- `name` (String) The name of the security group.
 
 ### Optional
 
-- `az` (String) Zone de disponibilité. Si non spécifié, utilise la valeur du provider.
-- `description` (String) Description du groupe de sécurité.
-- `egress` (Block List) Règles de trafic sortant. (see [below for nested schema](#nestedblock--egress))
-- `ingress` (Block List) Règles de trafic entrant. (see [below for nested schema](#nestedblock--ingress))
-- `orga_id` (String) ID de l'organisation. Si non spécifié, utilise la valeur du provider.
-- `project_id` (String) ID du projet. Si non spécifié, utilise la valeur du provider.
-- `subnet_ids` (List of String) IDs des subnets auxquels le groupe de sécurité s'applique (10 maximum). Si non spécifié, il s'applique à tous les subnets du projet.
-- `target` (Block, Optional) Sélecteur des instances ciblées par le groupe de sécurité. (see [below for nested schema](#nestedblock--target))
+- `az` (String) The availability zone. If not set, the provider value is used.
+- `description` (String) The description of the security group.
+- `egress` (Block List) Outbound traffic rules. (see [below for nested schema](#nestedblock--egress))
+- `ingress` (Block List) Inbound traffic rules. (see [below for nested schema](#nestedblock--ingress))
+- `orga_id` (String) The organization ID. If not set, the provider value is used.
+- `project_id` (String) The project ID. If not set, the provider value is used.
+- `subnet_ids` (List of String) The IDs of the subnets the security group applies to (10 maximum). If not set, it applies to all subnets of the project.
+- `target` (Block, Optional) Selects the instances targeted by the security group. (see [below for nested schema](#nestedblock--target))
 
 ### Read-Only
 
-- `id` (String) ID effectif du groupe de sécurité.
+- `id` (String) The ID of the security group.
 
 <a id="nestedblock--egress"></a>
 ### Nested Schema for `egress`
@@ -75,8 +75,8 @@ Required:
 
 Optional:
 
-- `end_port` (Number) Fin de la plage de ports. Vaut `port` si non spécifié.
-- `protocol` (String) Protocole : `TCP` (défaut), `UDP` ou `SCTP`.
+- `end_port` (Number) The end of the port range. Defaults to `port` if not set.
+- `protocol` (String) The protocol: `TCP` (default), `UDP` or `SCTP`.
 
 
 <a id="nestedblock--egress--to"></a>
@@ -102,7 +102,7 @@ Optional:
 Optional:
 
 - `match_expressions` (Block List) (see [below for nested schema](#nestedblock--egress--to--pod_selector--match_expressions))
-- `match_labels` (List of String) Liste de labels de correspondance au format `clé:valeur`.
+- `match_labels` (List of String) The list of match labels, in the format `key:value`.
 
 <a id="nestedblock--egress--to--pod_selector--match_expressions"></a>
 ### Nested Schema for `egress.to.pod_selector.match_expressions`
@@ -153,7 +153,7 @@ Optional:
 Optional:
 
 - `match_expressions` (Block List) (see [below for nested schema](#nestedblock--ingress--from--pod_selector--match_expressions))
-- `match_labels` (List of String) Liste de labels de correspondance au format `clé:valeur`.
+- `match_labels` (List of String) The list of match labels, in the format `key:value`.
 
 <a id="nestedblock--ingress--from--pod_selector--match_expressions"></a>
 ### Nested Schema for `ingress.from.pod_selector.match_expressions`
@@ -179,8 +179,8 @@ Required:
 
 Optional:
 
-- `end_port` (Number) Fin de la plage de ports. Vaut `port` si non spécifié.
-- `protocol` (String) Protocole : `TCP` (défaut), `UDP` ou `SCTP`.
+- `end_port` (Number) The end of the port range. Defaults to `port` if not set.
+- `protocol` (String) The protocol: `TCP` (default), `UDP` or `SCTP`.
 
 
 
@@ -190,7 +190,7 @@ Optional:
 Optional:
 
 - `match_expressions` (Block List) (see [below for nested schema](#nestedblock--target--match_expressions))
-- `match_labels` (List of String) Liste de labels de correspondance au format `clé:valeur`.
+- `match_labels` (List of String) The list of match labels, in the format `key:value`.
 
 <a id="nestedblock--target--match_expressions"></a>
 ### Nested Schema for `target.match_expressions`

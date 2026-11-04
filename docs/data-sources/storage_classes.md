@@ -3,12 +3,12 @@
 page_title: "spx_storage_classes Data Source - spx"
 subcategory: ""
 description: |-
-  Récupère la liste des StorageClasses disponibles pour un projet et une AZ.
+  Retrieves the list of StorageClasses available for a project and an AZ.
 ---
 
 # spx_storage_classes (Data Source)
 
-Récupère la liste des StorageClasses disponibles pour un projet et une AZ.
+Retrieves the list of StorageClasses available for a project and an AZ.
 
 
 
@@ -17,4 +17,4 @@ Récupère la liste des StorageClasses disponibles pour un projet et une AZ.
 
 ### Read-Only
 
-- `names` (List of String) Liste des noms de StorageClasses.
+- `names` (List of String) The list of StorageClass names.

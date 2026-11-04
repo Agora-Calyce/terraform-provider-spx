@@ -15,7 +15,7 @@ import (
 
 var macAddressRegexp = regexp.MustCompile(`^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$`)
 
-// advancedBoolAttribute : option avancée facultative ; null = héritée du vm_type
+// advancedBoolAttribute: optional advanced option; null = inherited from the vm_type
 func advancedBoolAttribute(description string) schema.BoolAttribute {
 	return schema.BoolAttribute{
 		Optional:    true,
@@ -27,7 +27,7 @@ func advancedBoolAttribute(description string) schema.BoolAttribute {
 	}
 }
 
-// knownBoolPointer retourne nil pour une valeur null ou inconnue
+// knownBoolPointer returns nil for a null or unknown value
 func knownBoolPointer(v types.Bool) *bool {
 	if v.IsNull() || v.IsUnknown() {
 		return nil
@@ -36,7 +36,7 @@ func knownBoolPointer(v types.Bool) *bool {
 	return &b
 }
 
-// knownString retourne "" pour une valeur null ou inconnue
+// knownString returns "" for a null or unknown value
 func knownString(v types.String) string {
 	if v.IsNull() || v.IsUnknown() {
 		return ""
@@ -44,8 +44,8 @@ func knownString(v types.String) string {
 	return v.ValueString()
 }
 
-// knownStringListPointer retourne nil si la liste est null/inconnue (laisser SPX décider),
-// sinon une slice non nil (une liste vide est significative).
+// knownStringListPointer returns nil if the list is null/unknown (let SPX decide),
+// otherwise a non-nil slice (an empty list is meaningful).
 func knownStringListPointer(ctx context.Context, v types.List, diags *diag.Diagnostics) *[]string {
 	if v.IsNull() || v.IsUnknown() {
 		return nil
@@ -90,7 +90,7 @@ func advancedToClient(m *instanceAdvancedModel) *client.InstanceAdvanced {
 	return adv
 }
 
-// advancedFromClient relit les options avancées en conservant la présence des sous-blocs de la configuration
+// advancedFromClient reads the advanced options back, preserving the presence of the configuration's sub-blocks
 func advancedFromClient(api *client.InstanceAdvanced, prior *instanceAdvancedModel) *instanceAdvancedModel {
 	if api == nil {
 		api = &client.InstanceAdvanced{}
@@ -119,8 +119,8 @@ func resolveBool(v types.Bool, api *bool) types.Bool {
 	return v
 }
 
-// resolveInstanceUnknowns remplace les valeurs calculées encore inconnues après un create/update
-// par celles renvoyées par l'API (Terraform refuse un état contenant des valeurs inconnues).
+// resolveInstanceUnknowns replaces computed values still unknown after a create/update
+// with those returned by the API (Terraform rejects a state containing unknown values).
 func resolveInstanceUnknowns(ctx context.Context, data *instanceResourceModel, inst *client.Instance, diags *diag.Diagnostics) {
 	if data.RunStrategy.IsUnknown() {
 		data.RunStrategy = types.StringValue(inst.RunStrategy)

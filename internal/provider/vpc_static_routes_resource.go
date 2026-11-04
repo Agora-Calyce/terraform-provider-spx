@@ -21,9 +21,9 @@ import (
 var _ resource.Resource = &vpcStaticRoutesResource{}
 var _ resource.ResourceWithImportState = &vpcStaticRoutesResource{}
 
-// vpcStaticRoutesResource gère l'ensemble des routes statiques d'un VPC.
-// C'est une ressource distincte de spx_vpc car chaque route référence un subnet du VPC
-// (route_table), ce qui créerait un cycle de dépendances si les routes étaient portées par le VPC.
+// vpcStaticRoutesResource manages the full set of static routes of a VPC.
+// It is a separate resource from spx_vpc because each route references a subnet of the VPC
+// (route_table), which would create a dependency cycle if the routes were held by the VPC.
 type vpcStaticRoutesResource struct {
 	client *client.Client
 }
@@ -54,19 +54,19 @@ func (r *vpcStaticRoutesResource) Metadata(ctx context.Context, req resource.Met
 
 func (r *vpcStaticRoutesResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Gère l'ensemble des routes statiques d'un VPC SPX. Les routes non déclarées ici sont supprimées ; " +
-			"les routes générées automatiquement par les NAT Gateways ne sont pas concernées.",
+		Description: "Manages the full set of static routes of an SPX VPC. Routes not declared here are removed; " +
+			"routes generated automatically by NAT Gateways are not affected.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identique à vpc_id.",
+				Description: "Same as vpc_id.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"vpc_id": schema.StringAttribute{
 				Required:    true,
-				Description: "ID du VPC.",
+				Description: "The ID of the VPC.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -74,9 +74,9 @@ func (r *vpcStaticRoutesResource) Schema(ctx context.Context, req resource.Schem
 			"az": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "Zone de disponibilité. Si non spécifié, utilise la valeur du provider.",
+				Description: "The availability zone. If not set, the provider value is used.",
 				PlanModifiers: []planmodifier.String{
-					// Sans UseStateForUnknown, la valeur non configurée est inconnue au plan et force un remplacement
+					// Without UseStateForUnknown, the unconfigured value is unknown at plan time and forces a replacement
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -84,9 +84,9 @@ func (r *vpcStaticRoutesResource) Schema(ctx context.Context, req resource.Schem
 			"orga_id": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "ID de l'organisation. Si non spécifié, utilise la valeur du provider.",
+				Description: "The organization ID. If not set, the provider value is used.",
 				PlanModifiers: []planmodifier.String{
-					// Sans UseStateForUnknown, la valeur non configurée est inconnue au plan et force un remplacement
+					// Without UseStateForUnknown, the unconfigured value is unknown at plan time and forces a replacement
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -94,9 +94,9 @@ func (r *vpcStaticRoutesResource) Schema(ctx context.Context, req resource.Schem
 			"project_id": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "ID du projet. Si non spécifié, utilise la valeur du provider.",
+				Description: "The project ID. If not set, the provider value is used.",
 				PlanModifiers: []planmodifier.String{
-					// Sans UseStateForUnknown, la valeur non configurée est inconnue au plan et force un remplacement
+					// Without UseStateForUnknown, the unconfigured value is unknown at plan time and forces a replacement
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -104,31 +104,31 @@ func (r *vpcStaticRoutesResource) Schema(ctx context.Context, req resource.Schem
 		},
 		Blocks: map[string]schema.Block{
 			"route": schema.SetNestedBlock{
-				Description: "Route statique.",
+				Description: "A static route.",
 				NestedObject: schema.NestedBlockObject{
 					Attributes: map[string]schema.Attribute{
 						"policy": schema.StringAttribute{
 							Optional:    true,
 							Computed:    true,
 							Default:     stringdefault.StaticString("policyDst"),
-							Description: "Politique de routage : policyDst (défaut, routage sur la destination) ou policySrc.",
+							Description: "The routing policy: policyDst (default, routes on the destination) or policySrc.",
 							Validators: []validator.String{
 								stringvalidator.OneOf("policyDst", "policySrc"),
 							},
 						},
 						"cidr": schema.StringAttribute{
 							Required:    true,
-							Description: "CIDR de destination (ou de source pour policySrc), sous forme canonique (ex. 192.168.0.0/24).",
+							Description: "The destination CIDR (or source CIDR for policySrc), in canonical form (e.g. 192.168.0.0/24).",
 							Validators:  []validator.String{canonicalCIDRValidator{}},
 						},
 						"next_hop_ip": schema.StringAttribute{
 							Required:    true,
-							Description: "IP du prochain saut. Doit appartenir à l'un des subnets du VPC.",
+							Description: "The next hop IP. Must belong to one of the VPC subnets.",
 							Validators:  []validator.String{ipAddressValidator{}},
 						},
 						"route_table": schema.StringAttribute{
 							Required:    true,
-							Description: "ID du subnet du VPC auquel la route s'applique.",
+							Description: "The ID of the VPC subnet the route applies to.",
 						},
 					},
 				},
@@ -172,14 +172,14 @@ func (r *vpcStaticRoutesResource) getParams(data *vpcStaticRoutesResourceModel) 
 	return orgaId, az, projectId
 }
 
-// putRoutes remplace les routes du VPC. Le proxy exige le nom du VPC : on le relit pour ne pas le modifier.
+// putRoutes replaces the VPC routes. The proxy requires the VPC name: it is read back so it stays unchanged.
 func (r *vpcStaticRoutesResource) putRoutes(ctx context.Context, orgaId, az, projectId, vpcId string, routes []client.StaticRoute) (*client.VPC, error) {
 	vpc, err := r.client.GetVPC(ctx, orgaId, az, projectId, vpcId)
 	if err != nil {
 		return nil, err
 	}
 	if vpc == nil {
-		return nil, fmt.Errorf("VPC %s introuvable", vpcId)
+		return nil, fmt.Errorf("VPC %s not found", vpcId)
 	}
 	if routes == nil {
 		routes = []client.StaticRoute{}
@@ -221,7 +221,7 @@ func (r *vpcStaticRoutesResource) Read(ctx context.Context, req resource.ReadReq
 		return
 	}
 
-	// Après un import, seul l'ID (= vpc_id) est connu
+	// After an import, only the ID (= vpc_id) is known
 	if data.VPCID.IsNull() || data.VPCID.ValueString() == "" {
 		data.VPCID = data.ID
 	}
@@ -282,7 +282,7 @@ func (r *vpcStaticRoutesResource) Delete(ctx context.Context, req resource.Delet
 		return
 	}
 	if vpc == nil {
-		// VPC déjà supprimé : rien à faire
+		// VPC already deleted: nothing to do
 		return
 	}
 
@@ -330,12 +330,12 @@ func staticRoutesFromClient(routes []client.StaticRoute) []staticRouteModel {
 	return res
 }
 
-// canonicalCIDRValidator exige un CIDR valide et canonique (adresse réseau), car l'API SPX
-// normalise les CIDR : une forme non canonique provoquerait une différence permanente.
+// canonicalCIDRValidator requires a valid, canonical CIDR (network address), because the SPX API
+// normalizes CIDRs: a non-canonical form would cause a permanent diff.
 type canonicalCIDRValidator struct{}
 
 func (v canonicalCIDRValidator) Description(ctx context.Context) string {
-	return "doit être un CIDR canonique (ex. 192.168.0.0/24)"
+	return "must be a canonical CIDR (e.g. 192.168.0.0/24)"
 }
 
 func (v canonicalCIDRValidator) MarkdownDescription(ctx context.Context) string {
@@ -349,20 +349,20 @@ func (v canonicalCIDRValidator) ValidateString(ctx context.Context, req validato
 	value := req.ConfigValue.ValueString()
 	ip, network, err := net.ParseCIDR(value)
 	if err != nil {
-		resp.Diagnostics.AddAttributeError(req.Path, "CIDR invalide", fmt.Sprintf("%q n'est pas un CIDR valide.", value))
+		resp.Diagnostics.AddAttributeError(req.Path, "Invalid CIDR", fmt.Sprintf("%q is not a valid CIDR.", value))
 		return
 	}
 	if !ip.Equal(network.IP) {
-		resp.Diagnostics.AddAttributeError(req.Path, "CIDR non canonique",
-			fmt.Sprintf("%q n'est pas sous forme canonique, utilisez %q.", value, network.String()))
+		resp.Diagnostics.AddAttributeError(req.Path, "Non-canonical CIDR",
+			fmt.Sprintf("%q is not in canonical form, use %q.", value, network.String()))
 	}
 }
 
-// ipAddressValidator exige une adresse IPv4 ou IPv6 valide
+// ipAddressValidator requires a valid IPv4 or IPv6 address
 type ipAddressValidator struct{}
 
 func (v ipAddressValidator) Description(ctx context.Context) string {
-	return "doit être une adresse IP valide"
+	return "must be a valid IP address"
 }
 
 func (v ipAddressValidator) MarkdownDescription(ctx context.Context) string {
@@ -374,7 +374,7 @@ func (v ipAddressValidator) ValidateString(ctx context.Context, req validator.St
 		return
 	}
 	if net.ParseIP(req.ConfigValue.ValueString()) == nil {
-		resp.Diagnostics.AddAttributeError(req.Path, "Adresse IP invalide",
-			fmt.Sprintf("%q n'est pas une adresse IP valide.", req.ConfigValue.ValueString()))
+		resp.Diagnostics.AddAttributeError(req.Path, "Invalid IP Address",
+			fmt.Sprintf("%q is not a valid IP address.", req.ConfigValue.ValueString()))
 	}
 }

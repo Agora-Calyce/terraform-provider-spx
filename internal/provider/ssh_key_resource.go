@@ -35,32 +35,32 @@ func (r *SSHKeyResource) Metadata(_ context.Context, req resource.MetadataReques
 
 func (r *SSHKeyResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Gère une clé SSH dans SPX.",
+		Description: "Manages an SSH key on SPX.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				Description: "ID effectif de la clé SSH.",
+				Description: "The ID of the SSH key.",
 			},
 			"name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
-				Description: "Nom de la clé SSH.",
+				Description: "The name of the SSH key.",
 			},
 			"public_key": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
-				Description: "Contenu de la clé publique SSH.",
+				Description: "The content of the SSH public key.",
 			},
 			"fingerprint": schema.StringAttribute{
 				Computed:    true,
-				Description: "Empreinte digitale de la clé publique.",
+				Description: "The fingerprint of the public key.",
 			},
 		},
 	}
@@ -135,7 +135,7 @@ func (r *SSHKeyResource) Read(ctx context.Context, req resource.ReadRequest, res
 }
 
 func (r *SSHKeyResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// Non supporté par SPX, RequiresReplace est utilisé sur les attributs.
+	// Not supported by SPX, RequiresReplace is used on the attributes.
 }
 
 func (r *SSHKeyResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

@@ -38,7 +38,7 @@ To try changes end to end: run the proxy locally (`make run` in `spx-tf-api`), `
   - computed fields filled only after reconciliation → `UseStateForUnknown`, to avoid `(known after apply)` noise;
   - `cloud_init` on instances is only read back when set in config, and keeps state values when the proxy returns them empty.
 - Every write method reads the resource back from the proxy response and writes the full state; never leave a computed attribute unknown after apply.
-- Code comments are in French; README and generated docs in English. Follow the style of the file you edit.
+- Code comments, README and generated docs in English. Follow the style of the file you edit.
 
 ## Adding or changing a field / resource
 
